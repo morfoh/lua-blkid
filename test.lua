@@ -1,4 +1,4 @@
 local blkid = require"blkid"
 
-cache = blkid.cache.get()
+cache = blkid.blkid_cache.get()
 print(cache)

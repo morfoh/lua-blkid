@@ -22,13 +22,12 @@
 -- typedefs
 --
 local typedefs = [[
-typedef struct blkid_cache *cache;
 ]]
 c_source "typedefs" (typedefs)
 -- pass extra C type info to FFI.
 ffi_cdef (typedefs)
 
-object "cache" {
+object "blkid_cache" {
 	constructor "get" {
                 var_in { "const char *", "filename", is_optional = true, default = 0 },
                 c_source [[
@@ -39,7 +38,7 @@ object "cache" {
   	lua_pushnil(L);
 	return 1;
   } else {
-  	${this} = (cache *)tmpcache;
+  	${this} = (blkid_cache *)tmpcache;
   }
                 ]],
         }
