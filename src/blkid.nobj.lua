@@ -56,4 +56,11 @@ object "blkid_dev" {
 					"int", "flags",
 		}
 	},
+
+	-- devname
+        method "devname" {
+                c_call "const char *" "blkid_dev_devname" {
+					"blkid_dev", "*this<1"
+		}
+        },
 }
