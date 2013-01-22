@@ -41,7 +41,14 @@ object "blkid_cache" {
   	${this} = (blkid_cache *)tmpcache;
   }
                 ]],
-        }
+        },
+
+	-- put cache
+	method "put" {
+		c_call "void" "blkid_put_cache" {
+					"blkid_cache", "*this<1"
+		}
+	},
 }
 
 --
