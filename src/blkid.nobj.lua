@@ -43,3 +43,17 @@ object "blkid_cache" {
                 ]],
         }
 }
+
+--
+-- blkid_device
+--
+object "blkid_dev" {
+	-- get
+	constructor "get" {
+		c_call "blkid_dev" "blkid_get_dev" {
+					"blkid_cache", "cache",
+					"const char *", "devicename",
+					"int", "flags",
+		}
+	},
+}
