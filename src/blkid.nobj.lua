@@ -27,6 +27,16 @@ c_source "typedefs" (typedefs)
 -- pass extra C type info to FFI.
 ffi_cdef (typedefs)
 
+export_definitions {
+"BLKID_DEV_FIND",
+"BLKID_DEV_CREATE",
+"BLKID_DEV_VERIFY",
+"BLKID_DEV_NORMAL",
+}
+
+--
+-- blkid_cache
+--
 object "blkid_cache" {
 	constructor "get" {
                 var_in { "const char *", "filename", is_optional = true, default = 0 },
@@ -38,7 +48,7 @@ object "blkid_cache" {
   	lua_pushnil(L);
 	return 1;
   } else {
-  	${this} = (blkid_cache *)tmpcache;
+	*${this} = tmpcache;
   }
                 ]],
         },
@@ -46,28 +56,41 @@ object "blkid_cache" {
 	-- put cache
 	method "put" {
 		c_call "void" "blkid_put_cache" {
-					"blkid_cache", "*this<1"
+					"blkid_cache *", "*this<1"
+		}
+	},
+
+	-- probe all
+	method "probe_all" {
+		c_call "int" "blkid_probe_all" {
+					"blkid_cache *", "*this<1"
 		}
 	},
 }
 
 --
--- blkid_device
+-- blkid_dev
 --
 object "blkid_dev" {
 	-- get
 	constructor "get" {
-		c_call "blkid_dev" "blkid_get_dev" {
-					"blkid_cache", "cache",
-					"const char *", "devicename",
-					"int", "flags",
-		}
+		var_in { "blkid_cache", "cache" },
+		var_in { "const char *", "devicename" },
+		var_in { "int", "flags" },
+		c_source[[
+  blkid_dev tmpdev;
+
+  blkid_get_cache(&cache, NULL);
+  tmpdev = blkid_get_dev(cache, devicename, BLKID_DEV_NORMAL);
+  ${this} = *(blkid_dev **)&tmpdev;
+		]]
 	},
 
 	-- devname
         method "devname" {
-                c_call "const char *" "blkid_dev_devname" {
-					"blkid_dev", "*this<1"
-		}
+		var_out { "const char *", "name" },
+                c_source[[
+  name = blkid_dev_devname((blkid_dev)${this});
+		]]
         },
 }
