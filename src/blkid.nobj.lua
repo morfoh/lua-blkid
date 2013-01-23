@@ -86,6 +86,20 @@ object "blkid_dev" {
 		]]
 	},
 
+	-- find dev with tag
+	constructor "find_dev_with_tag" {
+		var_in { "blkid_cache", "cache" },
+		var_in { "const char *", "type" },
+		var_in { "const char *", "value" },
+		c_source[[
+  blkid_dev tmpdev;
+
+  blkid_get_cache(&cache, NULL);
+  tmpdev = blkid_find_dev_with_tag(cache, type, value);
+  ${this} = *(blkid_dev **)&tmpdev;
+		]]
+	},
+
 	-- devname
         method "devname" {
 		var_out { "const char *", "name" },
